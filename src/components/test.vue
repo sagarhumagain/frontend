@@ -112,7 +112,7 @@ window.Toast = Toast;
         const formData = new FormData();
         formData.append('file', this.file);
         try{
-         await axios.post('/upload', formData)
+         await axios.post('api/upload', formData)
         }
         catch(err) {
           console.log(err);
@@ -129,7 +129,7 @@ window.Toast = Toast;
                 }).then((result) => {
                     //send an ajax request to the server
                     if (result.value) {
-                        this.form.delete('api/user/' + id).then(() => {
+                        this.form.delete('api/upload/' + id).then(() => {
                             swal.fire(
                                 'Deleted!',
                                 'Your file has been deleted.',
@@ -151,7 +151,7 @@ window.Toast = Toast;
 
             /*==== Start of Show existing User function ====*/
             loadUsers(){
-                    axios.get("api/user").then(({ data }) => (this.users = data, this.totaluser = data.total));
+                    axios.get("api/upload").then(({ data }) => (this.users = data, this.totaluser = data.total));
             }
             /*==== End of existing User ====*/
 
@@ -161,7 +161,7 @@ window.Toast = Toast;
 
             //Load the userlist if add or created a new user
             Fire.$on("AfterCreate",()=>{
-                this.loadUsers();
+                this.loadfiles();
             })
 
 
