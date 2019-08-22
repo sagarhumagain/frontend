@@ -4,7 +4,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Your Fils</h3>
+                        <h3 class="card-title">Your Files</h3>
 
                         <div class="card-tools">
                             <button type="" class="btn btn-primary" @click="newModal"><i class="fas fa-upload fa-fw"></i> Add new file</button>
@@ -21,9 +21,9 @@
                             </tr>
                             <tr v-for="(file, index) in files.data" :key="file.id">
                                 <td>{{index+1}}</td>
-                                <td>{{user.name}}</td>
-                                <td>{{user.email}}</td>
-                                <td>{{user.email}}</td>
+                                <td>{{file.name}}</td>
+                                <td>{{file.size}}</td>
+                                <td>{{file.hash}}</td>
                                 <td>
                                     <a href="#" @click="downloadfile(file.id)" class="btn btn-sm btn-danger">download
                                         <i class="fa fa-download"></i>
@@ -47,22 +47,16 @@
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form  @submit.prevent="createFile()">
+                    <form  @submit.prevent="sendFile()">
                         <div class="modal-body">
-                            <div class="form-group">
-                                <input v-model="form.name" type="text" name="name"
-                                       placeholder="Full Name"
-                                       class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
-                                <has-error :form="form" field="name"></has-error>
-                            </div>
-                            <div class="form-group">
-                                <input v-model="form.email" type="email" name="email"
-                                       placeholder="Email Address"
-                                       class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
-                                <has-error :form="form" field="email"></has-error>
-                            </div>
-                            
-                        
+                                <div class="file-field">
+                                        <div class="btn btn-primary mt-5">
+                                          <label>  
+                                            <input class="file-input" type="file" ref="file" @onchange="selectFile">
+                                            <span><i class="fas fa-upload"></i></span>
+                                          </label>
+                                        </div>
+                                      </div>
                             
                         </div>
                         <div class="modal-footer">
@@ -111,35 +105,19 @@ window.Toast = Toast;
                 $('#addNewFile').modal('show');
             },
             /*Create User Function Starts*/
-            createUser(){
-                this.$Progress.start(); //start a progress bar
-                this.form.post('api/user/') // POST form data
-                //Start Condition to check form is validate
-                    .then(()=>{
-                        Fire.$emit('AfterCreate'); //custom event to reload data
-
-                        $("#addNewFile").modal('hide'); //Hide the model
-
-                        //Sweetalert notification for the result
-                        Toast.fire({
-                            type: 'success',
-                            title: 'User Created Successfully'
-                        })
-
-                        this.$Progress.finish(); //End the progress bar
-                    })
-                    //if form is not valid of handle any errors
-                    .catch(()=>{
-                        swal.fire(
-                            'Error!',
-                            'Something Went Wrong.',
-                            'warning'
-                        )
-                        this.$Progress.fail(); //End the progress bar
-                    })
-
-            },
-            /*==== End of User Create ====*/
+            selectFile(){
+                 this.file = this.$refs.file.files[0];
+               },
+               async sendFile(){
+        const formData = new FormData();
+        formData.append('file', this.file);
+        try{
+         await axios.post('/upload', formData)
+        }
+        catch(err) {
+          console.log(err);
+        }
+      },
             /*==== Call Delete Modal uith user id ====*/
             downloadfile(id){
                 swal.fire({
